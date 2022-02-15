@@ -42,3 +42,4 @@ class Options(object):
         self.locale_code = code
         self.use_24hour_time_format = code in [
             "ru_RU", "uk_UA", "de_DE", "it_IT", "tr_TR", "cs_CZ","ta_IN"]
+        self.offset = 0

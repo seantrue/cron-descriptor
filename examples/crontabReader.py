@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import re
+import os
 
 try:
     from cron_descriptor import Options, ExpressionDescriptor
@@ -49,11 +50,14 @@ class CrontabReader(object):
         options = Options()
         options.day_of_week_start_index_zero = False
         options.use_24hour_time_format = True
+        options.offset=-5
         with open(cronfile) as f:
             for line in f.readlines():
-                parsed_line = self.parse_cron_line(line)
+                parsed_line, cmd = self.parse_cron_line(line)
+                description = ExpressionDescriptor(parsed_line, options)
                 if parsed_line:
-                    print("{} -> {}".format(parsed_line, ExpressionDescriptor(parsed_line, options)))
+                    print(f"{cmd:32} {description}".lower())
+                          
 
     def parse_cron_line(self, line):
         """Parses crontab line and returns only starting time string
@@ -64,13 +68,14 @@ class CrontabReader(object):
             Time part of cron line
         """
         stripped = line.strip()
-
+                          
         if stripped and stripped.startswith('#') is False:
             rexres = self.rex.search(stripped)
+            cmd = os.path.basename(stripped.split()[-1])
             if rexres:
-                return ' '.join(rexres.group(1).split())
+                return ' '.join(rexres.group(1).split()), cmd
 
-        return None
+        return None, None
 
 
-CrontabReader('/etc/crontab')
+CrontabReader('crontab')

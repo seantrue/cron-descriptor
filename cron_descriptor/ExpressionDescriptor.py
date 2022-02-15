@@ -524,10 +524,12 @@ class ExpressionDescriptor(object):
 
         """
         hour = int(hour_expression)
-
+        hour += self._options.offset
+        if hour < 0:
+            hour += 24
         period = ''
         if self._options.use_24hour_time_format is False:
-            period = " PM" if (hour >= 12) else " AM"
+            period = " PM" if (hour >= 12 or hour < 0) else " AM"
             if hour > 12:
                 hour -= 12
 
